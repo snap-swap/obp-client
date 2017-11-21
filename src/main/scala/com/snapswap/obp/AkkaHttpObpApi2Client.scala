@@ -1,5 +1,6 @@
 package com.snapswap.obp
 
+import java.time.{LocalDate, ZonedDateTime}
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
@@ -15,7 +16,6 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source}
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.snapswap.obp.OBP._
-import org.joda.time.DateTime
 import spray.json._
 
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -51,11 +51,11 @@ class AkkaHttpObpApi2Client(directLogin: OBPAPIDirectLogin,
                               mobilePhoneNumber: String,
                               email: String,
                               faceImageUrl: Uri,
-                              faceImageDate: DateTime,
-                              dateOfBirth: DateTime,
+                              faceImageDate: ZonedDateTime,
+                              dateOfBirth: LocalDate,
                               relationshipStatus: String,
                               dependants: Int,
-                              dobOfDependants: Seq[DateTime],
+                              dobOfDependants: Seq[LocalDate],
                               creditRating: String,
                               creditRatingSource: String,
                               creditLimitAmount: BigDecimal,
@@ -63,7 +63,7 @@ class AkkaHttpObpApi2Client(directLogin: OBPAPIDirectLogin,
                               highestEducationAttained: String,
                               employmentStatus: String,
                               kycStatus: Boolean,
-                              lastOkDate: DateTime): Future[String] = {
+                              lastOkDate: ZonedDateTime): Future[String] = {
     withPossibleRelogin {
       apiPost(
         s"/banks/$bankId/customers",
@@ -116,9 +116,9 @@ class AkkaHttpObpApi2Client(directLogin: OBPAPIDirectLogin,
                               customerNumber: String,
                               `type`: String,
                               number: String,
-                              issueDate: DateTime,
+                              issueDate: LocalDate,
                               issuePlace: String,
-                              expiryDate: DateTime): Future[Unit] = {
+                              expiryDate: LocalDate): Future[Unit] = {
     withPossibleRelogin {
       apiPut(s"/banks/$bankId/customers/$customerId/kyc_documents/$documentId",
         AddKycDocument(
@@ -136,7 +136,7 @@ class AkkaHttpObpApi2Client(directLogin: OBPAPIDirectLogin,
                            customerId: String,
                            bankId: String,
                            customerNumber: String,
-                           date: DateTime,
+                           date: ZonedDateTime,
                            how: String,
                            staffUserId: String,
                            staffName: String,
@@ -162,7 +162,7 @@ class AkkaHttpObpApi2Client(directLogin: OBPAPIDirectLogin,
                            customerNumber: String,
                            `type`: String,
                            url: Uri,
-                           date: DateTime,
+                           date: ZonedDateTime,
                            relatesToDocumentId: String,
                            relatesToCheckId: String): Future[Unit] = {
     withPossibleRelogin {
@@ -184,7 +184,7 @@ class AkkaHttpObpApi2Client(directLogin: OBPAPIDirectLogin,
                             bankId: String,
                             customerNumber: String,
                             isOk: Boolean,
-                            date: DateTime): Future[Unit] = {
+                            date: ZonedDateTime): Future[Unit] = {
     withPossibleRelogin {
       apiPut(s"/banks/$bankId/customers/$customerId/kyc_statuses",
         AddKycStatus(

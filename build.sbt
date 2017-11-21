@@ -2,7 +2,7 @@ name := "obp-client"
 
 organization := "com.snapswap"
 
-version := "0.0.1"
+version := "0.0.2"
 
 scalaVersion := "2.11.8"
 
@@ -32,8 +32,6 @@ libraryDependencies ++= {
   Seq(
     "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
-    "joda-time" % "joda-time" % "2.9.7",
-    "org.joda" % "joda-convert" % "1.8.1",
     "com.google.code.findbugs" % "jsr305" % "3.0.1" % "provided",
     "org.scalatest" %% "scalatest" % "3.0.1" % "test",
     "com.google.guava" % "guava" % "22.0",

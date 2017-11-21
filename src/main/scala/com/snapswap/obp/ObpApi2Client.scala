@@ -1,7 +1,8 @@
 package com.snapswap.obp
 
-import akka.http.scaladsl.model._
-import org.joda.time.DateTime
+import java.time.{LocalDate, ZonedDateTime}
+
+import akka.http.scaladsl.model.Uri
 
 import scala.concurrent.Future
 
@@ -20,11 +21,11 @@ trait ObpApi2Client {
                      mobilePhoneNumber: String,
                      email: String,
                      faceImageUrl: Uri,
-                     faceImageDate: DateTime,
-                     dateOfBirth: DateTime,
+                     faceImageDate: ZonedDateTime,
+                     dateOfBirth: LocalDate,
                      relationshipStatus: String,
                      dependants: Int,
-                     dobOfDependants: Seq[DateTime],
+                     dobOfDependants: Seq[LocalDate],
                      creditRating: String,
                      creditRatingSource: String,
                      creditLimitAmount: BigDecimal,
@@ -32,42 +33,49 @@ trait ObpApi2Client {
                      highestEducationAttained: String,
                      employmentStatus: String,
                      kycStatus: Boolean,
-                     lastOkDate: DateTime): Future[String]
+                     lastOkDate: ZonedDateTime): Future[String]
 
   def createAccount(accountId: String, bankId: String,
                     userId: String, label: String, `type`: String,
                     balanceAmount: BigDecimal, balanceCurrency: String, branchId: String,
                     accountRoutingScheme: String, accountRoutingAddress: String): Future[Unit]
 
-  def addKycDocument(documentId: String, customerId: String, bankId: String,
+  def addKycDocument(documentId: String,
+                     customerId: String,
+                     bankId: String,
                      customerNumber: String,
                      `type`: String,
                      number: String,
-                     issueDate: DateTime,
+                     issueDate: LocalDate,
                      issuePlace: String,
-                     expiryDate: DateTime): Future[Unit]
+                     expiryDate: LocalDate): Future[Unit]
 
-  def addKycCheck(checkId: String, customerId: String, bankId: String,
+  def addKycCheck(checkId: String,
+                  customerId: String,
+                  bankId: String,
                   customerNumber: String,
-                  date: DateTime,
+                  date: ZonedDateTime,
                   how: String,
                   staffUserId: String,
                   staffName: String,
                   satisfied: Boolean,
                   comments: String): Future[Unit]
 
-  def addKycMedia(mediaId: String, customerId: String, bankId: String,
+  def addKycMedia(mediaId: String,
+                  customerId: String,
+                  bankId: String,
                   customerNumber: String,
                   `type`: String,
                   url: Uri,
-                  date: DateTime,
+                  date: ZonedDateTime,
                   relatesToDocumentId: String,
                   relatesToCheckId: String): Future[Unit]
 
-  def addKycStatus(customerId: String, bankId: String,
+  def addKycStatus(customerId: String,
+                   bankId: String,
                    customerNumber: String,
                    isOk: Boolean,
-                   date: DateTime): Future[Unit]
+                   date: ZonedDateTime): Future[Unit]
 
   def getAccount(accountId: String,
                  bankId: String): Future[OBPAccount]
