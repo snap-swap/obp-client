@@ -1,7 +1,7 @@
 package com.snapswap.obp
 
+import java.time._
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, ZonedDateTime}
 
 import spray.json._
 
@@ -112,28 +112,33 @@ object OBP extends DefaultJsonProtocol {
     }
   }
 
+  /*
+  * OBP expects date fields only in the 2017-12-18T19:46:48Z format
+  * else you'll get json format error
+  * */
+
   implicit object DateJsonFormat extends RootJsonFormat[LocalDate] {
-    private val formatter = DateTimeFormatter.ISO_OFFSET_DATE
+    private val formatter = DateTimeFormatter.ISO_DATE_TIME
 
     override def read(json: JsValue): LocalDate = json match {
       case JsString(str) =>
-        Try(ZonedDateTime.parse(str, formatter)) match {
+        Try(LocalDateTime.parse(str, formatter)) match {
           case Success(dt) =>
             dt.toLocalDate
           case Failure(ex) =>
-            deserializationError(s"Expected Date as JsString in '${formatter.toString}' format, but got '$str'", ex)
+            deserializationError(s"Expected DateTime as JsString in '${formatter.toString}' format, but got '$str'", ex)
         }
       case other =>
         deserializationError(s"Expected DateTime as JsString, but got $other")
     }
 
     override def write(obj: LocalDate) =
-      JsString(obj.format(formatter))
+      JsString(obj.atStartOfDay().atOffset(ZoneOffset.UTC).format(formatter))
   }
 
 
   implicit object DateTimeJsonFormat extends RootJsonFormat[ZonedDateTime] {
-    private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+    private val formatter = DateTimeFormatter.ISO_DATE_TIME
 
     override def read(json: JsValue): ZonedDateTime = json match {
       case JsString(str) =>
@@ -141,14 +146,14 @@ object OBP extends DefaultJsonProtocol {
           case Success(dt) =>
             dt
           case Failure(ex) =>
-            deserializationError(s"Expected Date as JsString in '${formatter.toString}' format, but got '$str'", ex)
+            deserializationError(s"Expected DateTime as JsString in '${formatter.toString}' format, but got '$str'", ex)
         }
       case other =>
         deserializationError(s"Expected DateTime as JsString, but got $other")
     }
 
     override def write(obj: ZonedDateTime) =
-      JsString(obj.format(formatter))
+      JsString(obj.withNano(0).toLocalDateTime.atOffset(obj.getOffset).format(formatter))
   }
 
   implicit val DirectLoginTokenFormat = jsonFormat1(DirectLoginToken)
